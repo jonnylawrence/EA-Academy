@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="slides-format" content="viewport">
+  <title>How Big Things Get Done — Teaching Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-bg: #f7fafc;
+      --color-bg-deep: #edf2f7;
+      --color-surface: #ffffff;
+      --color-text: #0f172a;
+      --color-text-secondary: #334155;
+      --color-text-muted: #64748b;
+      --color-accent-1: #2563eb;
+      --color-accent-2: #14b8a6;
+      --color-accent-3: #f97316;
+      --color-glass-bg: rgba(255,255,255,0.82);
+      --color-glass-border: rgba(15,23,42,0.08);
+      --color-vignette: rgba(15,23,42,0.05);
+      --font-display: 'DM Serif Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+  </style>
+  <style>
+    :root { --color-bg: #f7fafc; --color-text: #0f172a; --glow-color-rgb: 37,99,235; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { background: var(--color-bg); margin: 0; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
+    .deck { width: 100vw; height: 100vh; position: relative; }
+    .slide { position: absolute; inset: 0; background: var(--color-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.97); transition: opacity 0.7s ease, transform 0.7s ease; pointer-events: none; overflow: hidden; }
+    .slide.active { opacity: 1; transform: scale(1); pointer-events: all; }
+    .slide > .content { position: relative; z-index: 2; width: 100%; max-width: 1180px; padding: clamp(1.5rem, 4vw, 4rem); }
+    .nav-controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; z-index: 100; background: rgba(255,255,255,0.82); backdrop-filter: blur(10px); padding: 10px 22px; border-radius: 40px; border: 1px solid rgba(15,23,42,0.08); box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
+    .nav-btn { width: 40px; height: 40px; border: none; background: rgba(37,99,235,0.08); color: #2563eb; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .slide-dots { display: flex; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(15,23,42,0.12); cursor: pointer; transition: transform 0.3s ease, background 0.3s ease; }
+    .dot.active { background: #2563eb; transform: scale(1.25); }
+    .slide-counter { font-size: 0.85rem; color: #64748b; min-width: 42px; text-align: center; }
+    .reveal { opacity: 0; transform: translateY(18px); }
+    .gradient-mesh { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(80px); animation: float-slow 14s ease-in-out infinite; }
+    .blob:nth-child(2) { animation-duration: 18s; }
+    .blob:nth-child(3) { animation-duration: 20s; }
+    @keyframes float-slow {
+      0% { transform: translate(0,0) scale(1); }
+      25% { transform: translate(50px,-40px) scale(1.08); }
+      50% { transform: translate(-35px,35px) scale(0.94); }
+      75% { transform: translate(30px,20px) scale(1.04); }
+      100% { transform: translate(0,0) scale(1); }
+    }
+    @keyframes float { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-12px);} }
+    .slide::before {
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 240px 240px; opacity: 0.025;
+    }
+    .slide::after {
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 55%, var(--color-vignette) 100%);
+    }
+    .hero-badge { display:inline-flex; align-items:center; gap:10px; padding:10px 18px; border-radius:999px; background:rgba(255,255,255,0.72); border:1px solid rgba(15,23,42,0.08); box-shadow: 0 10px 30px rgba(15,23,42,0.06); }
+    .card { background: rgba(255,255,255,0.88); border: 1px solid rgba(15,23,42,0.08); border-radius: 22px; box-shadow: 0 18px 45px rgba(15,23,42,0.08); }
+    .section-label { letter-spacing: 0.14em; text-transform: uppercase; color: #64748b; font-size: 0.78rem; font-weight: 700; }
+    .quote-line { border-left: 4px solid #2563eb; padding-left: 18px; }
+    .bar-track { background: rgba(37,99,235,0.08); border-radius: 999px; height: 16px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #2563eb, #14b8a6); width: 0%; }
+    .big-stat { background: linear-gradient(135deg, #2563eb, #14b8a6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .icon-circle { width: 52px; height: 52px; border-radius: 16px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(20,184,166,0.12)); }
+  </style>
+</head>
+<body>
+<div class="deck">
+  <div class="slide active" data-slide="1">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 420px; height: 420px; top: -100px; right: -80px; background: rgba(37,99,235,0.14);"></div>
+      <div class="blob" style="width: 320px; height: 320px; bottom: -70px; left: -60px; background: rgba(20,184,166,0.12);"></div>
+      <div class="blob" style="width: 220px; height: 220px; top: 35%; left: 18%; background: rgba(249,115,22,0.10);"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute; inset:0; z-index:1;"></canvas>
+    <div class="content text-center">
+      <div class="hero-badge mb-6 reveal"><span>📘</span><span class="section-label" style="font-size:0.8rem; color:#334155;">Teaching deck · 8 slides</span></div>
+      <div class="text-[110px] mb-4 animate-[float_3.5s_ease-in-out_infinite] reveal">🏗️</div>
+      <h1 class="font-display text-[clamp(2.4rem,5vw,4.8rem)] leading-[1.05] tracking-tight text-slate-900 mb-4 reveal">How Big Things Get Done</h1>
+      <p class="text-[clamp(1rem,1.7vw,1.35rem)] text-text-secondary max-w-3xl mx-auto reveal">Bent Flyvbjerg and Dan Gardner on why major projects fail, and how better planning improves delivery.</p>
+      <p class="mt-5 text-sm text-text-muted reveal">Includes IT and software implementation examples.</p>
+    </div>
+  </div>
+  <div class="slide" data-slide="2">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 300px; height: 300px; top: -80px; right: -60px; background: rgba(37,99,235,0.10);"></div>
+      <div class="blob" style="width: 240px; height: 240px; bottom: -50px; left: -40px; background: rgba(20,184,166,0.08);"></div>
+    </div>
+    <div class="content">
+      <p class="section-label mb-3 reveal">Core message</p>
+      <h2 class="font-display text-[clamp(2rem,4vw,3.2rem)] mb-6 reveal">Think slow, act fast</h2>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="card p-8 reveal">
+          <div class="icon-circle mb-5">⚠️</div>
+          <h3 class="text-2xl font-bold mb-3">What usually happens</h3>
+          <p class="text-text-secondary text-lg leading-relaxed">Teams rush into delivery, discover problems late, then slow down as costs, changes, and rework accumulate. The book describes this failure pattern as “think fast, act slow.”</p>
+        </div>
+        <div class="card p-8 reveal">
+          <div class="icon-circle mb-5">✅</div>
+          <h3 class="text-2xl font-bold mb-3">What successful teams do</h3>
+          <p class="text-text-secondary text-lg leading-relaxed">They spend much longer clarifying scope, sequencing work, and testing assumptions before moving quickly through execution with fewer surprises.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide" data-slide="3">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 280px; height: 280px; top: -60px; right: -40px; background: rgba(37,99,235,0.08);"></div>
+      <div class="blob" style="width: 240px; height: 240px; bottom: -60px; left: -50px; background: rgba(249,115,22,0.08);"></div>
+    </div>
+    <div class="content">
+      <p class="section-label mb-3 reveal">The problem</p>
+      <h2 class="font-display text-[clamp(2rem,4vw,3rem)] mb-4 reveal">The iron law of big projects</h2>
+      <p class="text-lg text-text-secondary max-w-3xl mb-8 reveal">Across Flyvbjerg’s large project database, strong performance on cost, schedule, and benefits is exceptionally rare.</p>
+      <div class="grid grid-cols-3 gap-5 mb-8">
+        <div class="card p-7 text-center reveal">
+          <div class="text-5xl font-black big-stat mb-2" data-count="92" data-suffix="%">0%</div>
+          <div class="font-semibold text-lg mb-1">Over budget or late</div>
+          <div class="text-text-muted text-sm">Most large projects miss at least one core target.</div>
+        </div>
+        <div class="card p-7 text-center reveal">
+          <div class="text-5xl font-black big-stat mb-2" data-count="8.5" data-suffix="%">0%</div>
+          <div class="font-semibold text-lg mb-1">On time and on budget</div>
+          <div class="text-text-muted text-sm">Hitting both targets together is uncommon.</div>
+        </div>
+        <div class="card p-7 text-center reveal">
+          <div class="text-5xl font-black big-stat mb-2" data-count="0.5" data-suffix="%">0%</div>
+          <div class="font-semibold text-lg mb-1">Meet cost, time, and benefits</div>
+          <div class="text-text-muted text-sm">Only a tiny minority deliver on all three.</div>
+        </div>
+      </div>
+      <div class="quote-line text-text-secondary text-lg reveal">The implication for teaching is simple: failure is not random. It follows patterns that can be studied and reduced.</div>
+    </div>
+  </div>
+  <div class="slide" data-slide="4">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 300px; height: 300px; top: -70px; right: -30px; background: rgba(20,184,166,0.09);"></div>
+      <div class="blob" style="width: 220px; height: 220px; bottom: -40px; left: -30px; background: rgba(37,99,235,0.08);"></div>
+    </div>
+    <div class="content">
+      <p class="section-label mb-3 reveal">Three ideas</p>
+      <h2 class="font-display text-[clamp(2rem,4vw,3rem)] mb-7 reveal">The practical toolkit</h2>
+      <div class="grid grid-cols-3 gap-5">
+        <div class="card p-7 reveal">
+          <div class="icon-circle mb-4">🔭</div>
+          <h3 class="text-xl font-bold mb-3">Take the outside view</h3>
+          <p class="text-text-secondary">Forecast using outcomes from similar past projects rather than relying only on internal optimism.</p>
+        </div>
+        <div class="card p-7 reveal">
+          <div class="icon-circle mb-4">🧱</div>
+          <h3 class="text-xl font-bold mb-3">Build with Lego</h3>
+          <p class="text-text-secondary">Prefer modular, repeatable components so teams learn faster and reduce one-off complexity.</p>
+        </div>
+        <div class="card p-7 reveal">
+          <div class="icon-circle mb-4">↩️</div>
+          <h3 class="text-xl font-bold mb-3">Think right to left</h3>
+          <p class="text-text-secondary">Start with the end state, then work backward through milestones, dependencies, and decisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide" data-slide="5">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 320px; height: 320px; top: -60px; right: -40px; background: rgba(37,99,235,0.10);"></div>
+      <div class="blob" style="width: 230px; height: 230px; bottom: -50px; left: -50px; background: rgba(20,184,166,0.08);"></div>
+    </div>
+    <div class="content">
+      <p class="section-label mb-3 reveal">IT example</p>
+      <h2 class="font-display text-[clamp(2rem,4vw,3rem)] mb-8 reveal">How this maps to software delivery</h2>
+      <div class="grid grid-cols-2 gap-6 mb-6">
+        <div class="card p-8 reveal">
+          <h3 class="text-2xl font-bold mb-5">Good translation into IT</h3>
+          <div class="space-y-4 text-text-secondary text-lg">
+            <div>Use reference-class data from similar implementations.</div>
+            <div>Prototype early in sandboxes and test integrations before rollout.</div>
+            <div>Prefer modular services, APIs, and staged deployment over monolithic rewrites.</div>
+          </div>
+        </div>
+        <div class="card p-8 reveal">
+          <h3 class="text-2xl font-bold mb-5">Typical failure pattern</h3>
+          <div class="space-y-4 text-text-secondary text-lg">
+            <div>Political or executive deadlines force premature launch.</div>
+            <div>Architecture gets locked in before performance and user pathways are proven.</div>
+            <div>Integration, data quality, training, and adoption problems are left until late.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card p-6 reveal">
+        <div class="font-semibold text-lg mb-3">Illustrative cases</div>
+        <p class="text-text-secondary text-lg">Healthcare.gov became a widely cited example of rushed launch and late integration failure, while government IT programmes such as Canada’s firearms registry are often cited as examples of severe underestimation and escalation.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide" data-slide="6">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 280px; height: 280px; top: -60px; right: -30px; background: rgba(249,115,22,0.08);"></div>
+      <div class="blob" style="width: 230px; height: 230px; bottom: -60px; left: -40px; background: rgba(37,99,235,0.08);"></div>
+    </div>
+    <div class="content">
+      <p class="section-label mb-3 reveal">Teaching slide</p>
+      <h2 class="font-display text-[clamp(2rem,4vw,3rem)] mb-8 reveal">Simple teaching model</h2>
+      <div class="grid grid-cols-[1.1fr_0.9fr] gap-8 items-center">
+        <div class="card p-8 reveal">
+          <div class="space-y-5">
+            <div>
+              <div class="flex justify-between mb-2"><span class="font-semibold">Planning effort</span><span class="text-text-muted">High</span></div>
+              <div class="bar-track"><div class="bar-fill" data-width="88"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-2"><span class="font-semibold">Execution speed</span><span class="text-text-muted">Fast once ready</span></div>
+              <div class="bar-track"><div class="bar-fill" data-width="78"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-2"><span class="font-semibold">Late-stage surprises</span><span class="text-text-muted">Low</span></div>
+              <div class="bar-track"><div class="bar-fill" data-width="22"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="card p-8 mb-5">
+            <div class="font-semibold text-lg mb-3">Teach it as two phases</div>
+            <p class="text-text-secondary">1. Slow thinking: scope, sequence, options, tests, risk, evidence.</p>
+            <p class="text-text-secondary">2. Fast action: disciplined delivery against a well-developed plan.</p>
+          </div>
+          <div class="card p-8">
+            <div class="font-semibold text-lg mb-3">Useful classroom question</div>
+            <p class="text-text-secondary">Where are we currently mistaking visible activity for genuine progress?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide" data-slide="7">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 300px; height: 300px; top: -50px; right: -20px; background: rgba(20,184,166,0.10);"></div>
+      <div class="blob" style="width: 240px; height: 240px; bottom: -50px; left: -40px; background: rgba(37,99,235,0.08);"></div>
+    </div>
+    <canvas class="particle-canvas-ambient" style="position:absolute; inset:0; z-index:1;"></canvas>
+    <div class="content">
+      <p class="section-label mb-3 reveal">Discussion</p>
+      <h2 class="font-display text-[clamp(2rem,4vw,3rem)] mb-8 reveal">Questions for learners</h2>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="card p-8 reveal">
+          <h3 class="text-xl font-bold mb-4">Reflection prompts</h3>
+          <ul class="space-y-4 text-lg text-text-secondary">
+            <li>What evidence would count as an outside view for your next project?</li>
+            <li>Which parts of your work could be made modular?</li>
+            <li>Where does early commitment make later change expensive?</li>
+          </ul>
+        </div>
+        <div class="card p-8 reveal">
+          <h3 class="text-xl font-bold mb-4">Applied settings</h3>
+          <ul class="space-y-4 text-lg text-text-secondary">
+            <li>Electronic patient record upgrades.</li>
+            <li>Major service redesign or pathway transformation.</li>
+            <li>Data migration, reporting, and governance programmes.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide" data-slide="8">
+    <div class="gradient-mesh">
+      <div class="blob" style="width: 420px; height: 420px; top: -100px; right: -60px; background: rgba(37,99,235,0.13);"></div>
+      <div class="blob" style="width: 320px; height: 320px; bottom: -70px; left: -50px; background: rgba(20,184,166,0.11);"></div>
+      <div class="blob" style="width: 220px; height: 220px; top: 42%; left: 18%; background: rgba(249,115,22,0.10);"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute; inset:0; z-index:1;"></canvas>
+    <div class="content text-center">
+      <div class="text-[96px] mb-4 animate-[float_3.5s_ease-in-out_infinite] reveal">🧠</div>
+      <h2 class="font-display text-[clamp(2.4rem,5vw,4.4rem)] mb-4 reveal">Memorable takeaway</h2>
+      <p class="text-[clamp(1.1rem,1.9vw,1.5rem)] text-text-secondary max-w-3xl mx-auto mb-6 reveal">Projects usually do not fail in the middle. They start wrong, then reveal the consequences later.</p>
+      <div class="hero-badge mx-auto reveal"><span class="font-bold text-slate-900">Teach this line:</span><span class="text-text-secondary">Think slow, act fast.</span></div>
+    </div>
+  </div>
+</div>
+<div class="nav-controls">
+  <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+  <span class="slide-counter" id="counter">1 / 8</span>
+</div>
+<script>
+let current = 1;
+const total = document.querySelectorAll('.slide').length;
+const dotsContainer = document.getElementById('dots');
+const counter = document.getElementById('counter');
+for (let i = 1; i <= total; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 1 ? ' active' : ''); dot.onclick = () => goToSlide(i); dotsContainer.appendChild(dot); }
+function goToSlide(n) { const prev = document.querySelector('.slide.active'); const next = document.querySelector(`.slide[data-slide="${n}"]`); if (prev) prev.classList.remove('active'); if (next) { next.classList.add('active'); animateSlide(next); } current = n; updateNav(); }
+function changeSlide(dir) { let next = current + dir; if (next < 1) next = total; if (next > total) next = 1; goToSlide(next); }
+function updateNav() { document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === current)); counter.textContent = current + ' / ' + total; }
+document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); } if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); } });
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1); });
+function animateSlide(slide) { slide.querySelectorAll('.reveal').forEach((el, i) => { el.style.transition = 'none'; el.style.opacity = '0'; el.style.transform = 'translateY(18px)'; el.offsetHeight; const delay = i * 0.08; el.style.transition = `opacity 0.4s ease ${delay}s, transform 0.4s ease ${delay}s`; el.style.opacity = '1'; el.style.transform = 'translateY(0px)'; }); animateSlideEffects(slide); }
+function animateSlideEffects(slide) {
+  slide.querySelectorAll('[data-count]:not(.counted)').forEach(el => { el.classList.add('counted'); const target = parseFloat(el.dataset.count); const suffix = el.dataset.suffix || ''; let cur = 0; const step = target / 36; const timer = setInterval(() => { cur += step; if (cur >= target) { cur = target; clearInterval(timer); } const shown = (target % 1 !== 0) ? cur.toFixed(1) : Math.round(cur).toString(); el.textContent = shown + suffix; }, 28); });
+  slide.querySelectorAll('.bar-fill:not(.fill-init)').forEach((bar, i) => { bar.classList.add('fill-init'); bar.style.width = '0%'; bar.style.transition = `width 0.6s ease ${i * 0.12}s`; bar.offsetHeight; bar.style.width = bar.dataset.width + '%'; });
+}
+window.initParticles = function(canvas, options) {
+  if (!canvas) return; const ctx = canvas.getContext('2d'); canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; const interactive = options.interactive !== false; const count = options.count || (interactive ? 42 : 16); let mx = -1000, my = -1000; const particles = Array.from({ length: count }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, size: Math.random() * 2 + 0.8, alpha: Math.random() * 0.28 + 0.08 })); if (interactive) { canvas.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); mx = e.clientX - rect.left; my = e.clientY - rect.top; }); canvas.addEventListener('mouseleave', () => { mx = -1000; my = -1000; }); }
+  (function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { if (interactive) { const dx = p.x - mx, dy = p.y - my, dist = Math.sqrt(dx*dx + dy*dy); if (dist < 120 && dist > 0) { const force = (120 - dist) / 120 * 1.2; p.vx += (dx / dist) * force * 0.04; p.vy += (dy / dist) * force * 0.04; } } p.vx *= 0.985; p.vy *= 0.985; p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0; if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(37,99,235,${p.alpha})`; ctx.fill(); }); requestAnimationFrame(animate); })();
+};
+document.querySelectorAll('.particle-canvas').forEach(c => window.initParticles(c, { interactive: true, count: 42 }));
+document.querySelectorAll('.particle-canvas-ambient').forEach(c => window.initParticles(c, { interactive: false, count: 16 }));
+try { animateSlide(document.querySelector('.slide.active')); } catch(e) {}
+</script>
+</body>
+</html>
