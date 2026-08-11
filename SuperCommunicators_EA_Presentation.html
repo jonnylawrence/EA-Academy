@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Communicators for Enterprise Architects</title>
+<style>
+
+:root {
+  --bg: #0f172a;
+  --bg2: #1e3a8a;
+  --card: #1e293b;
+  --accent: #38bdf8;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+.progress-bar { height: 5px; background: #1e293b; width: 100%; position: fixed; top: 0; left: 0; z-index: 10; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #818cf8); transition: width 0.3s ease; }
+.deck { position: relative; width: 100%; height: 100vh; }
+.slide-wrap {
+  position: absolute; inset: 0;
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+}
+.slide-wrap.active { display: flex; opacity: 1; animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform:translateY(0);} }
+main.slide { flex: 1; padding: 70px 90px 90px; display: flex; flex-direction: column; justify-content: center; max-width: 1100px; margin: 0 auto; overflow-y: auto; }
+h1 { font-size: 3em; color: var(--accent); margin-bottom: 0.2em; }
+h2 { font-size: 2.1em; color: var(--accent); margin-bottom: 0.4em; display:flex; align-items:center; gap:14px; }
+.icon { font-size: 1em; }
+p { font-size: 1.2em; line-height: 1.6em; }
+.subtitle { font-size: 1.3em; color: var(--muted); max-width: 700px; margin: 0 auto; }
+.tag { display: inline-block; background: var(--card); color: var(--accent); padding: 5px 14px; border-radius: 20px; font-size: 0.8em; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; align-self: center; }
+.cover-icons { font-size: 2.5em; margin-top: 40px; letter-spacing: 20px; text-align:center; }
+.slide-wrap.cover main.slide { background: linear-gradient(135deg, var(--bg), var(--bg2)); text-align: center; align-items: center; border-radius: 16px; justify-content: center; }
+.highlight { background: var(--card); border-left: 4px solid var(--accent); padding: 18px 24px; border-radius: 8px; margin: 20px 0; font-size: 1.1em; display: flex; gap: 14px; align-items: flex-start; }
+.highlight .icon { font-size: 1.4em; flex-shrink:0; }
+.checklist, .numbered { list-style: none; padding: 0; font-size: 1.15em; }
+.checklist li, .numbered li { background: var(--card); margin: 10px 0; padding: 14px 18px; border-radius: 8px; display: flex; align-items: center; gap: 14px; transition: transform 0.2s ease, background 0.2s ease; }
+.checklist li:hover, .numbered li:hover { transform: translateX(6px); background: #253449; }
+.num-icon { font-size: 1.3em; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.05em; background: var(--card); border-radius: 8px; overflow: hidden; }
+th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid #334155; }
+th { color: var(--accent); background: #16213a; }
+tr:hover td { background: #253449; }
+.grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 30px; }
+.card.flip { perspective: 1000px; height: 220px; cursor: pointer; }
+.card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+.card.flip.flipped .card-inner { transform: rotateY(180deg); }
+.card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; background: var(--card); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.card-back { transform: rotateY(180deg); background: #2563eb; }
+.big-icon { font-size: 2.6em; margin-bottom: 8px; }
+.card h4 { color: var(--accent); margin: 4px 0; font-size: 1.3em; }
+.tip { color: var(--muted); font-size: 1em; margin-top: 20px; display:flex; gap:8px; align-items:center; }
+.loop-diagram { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 30px 0; flex-wrap: wrap; }
+.loop-step { background: var(--card); padding: 16px 22px; border-radius: 10px; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
+.arrow { font-size: 1.5em; color: var(--accent); }
+nav.controls { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.9); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: space-between; padding: 14px 40px; z-index: 5; border-top: 1px solid #1e293b; }
+button.nav-btn { color: var(--text); background: var(--card); border: none; padding: 10px 22px; border-radius: 8px; font-size: 1em; cursor: pointer; transition: background 0.2s ease; display: flex; align-items: center; gap: 8px; }
+button.nav-btn:hover:not(:disabled) { background: var(--accent); color: #0f172a; }
+button.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.dots { display: flex; gap: 8px; }
+.dots button { width: 10px; height: 10px; border-radius: 50%; background: #334155; border: none; padding: 0; cursor: pointer; }
+.dots button.active { background: var(--accent); }
+.slide-counter { color: var(--muted); font-size: 0.9em; min-width: 60px; text-align: center; }
+
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+
+<div class="deck">
+  <div class="slide-wrap cover active" data-index="0"><main class="slide">
+        <div class="tag">Book Summary &amp; Application</div>
+        <h1>Super Communicators</h1>
+        <p class="subtitle">Applying Charles Duhigg's framework to Enterprise Architecture &amp; senior stakeholder engagement</p>
+        <div class="cover-icons">
+          <span>🗣️</span><span>🏛️</span><span>🤝</span><span>📊</span><span>🔍</span>
+        </div>
+        </main></div><div class="slide-wrap" data-index="1"><main class="slide">
+        <h2><span class="icon">🎯</span> Why This Matters for EAs</h2>
+        <p>Enterprise Architects sit between technology, business strategy, and politics — success depends less on the quality of your architecture diagrams and more on whether senior stakeholders feel heard, aligned, and confident in your direction.</p>
+        <div class="highlight">
+          <span class="icon">💡</span>
+          Duhigg's core claim: great communicators aren't naturally gifted — they consciously diagnose <b>what kind of conversation</b> is happening and match it. This is the single biggest lever EAs can pull in governance boards, design authority reviews, and roadmap negotiations.
+        </div>
+        </main></div><div class="slide-wrap" data-index="2"><main class="slide">
+        <h2><span class="icon">🔀</span> The Three Conversation Types — in an EA Context</h2>
+        <div class="grid">
+          <div class="card flip" tabindex="0">
+            <div class="card-inner">
+              <div class="card-front"><div class="big-icon">⚙️</div><h4>Practical</h4><p>"What's this really about?"</p></div>
+              <div class="card-back"><p>Architecture decisions, cost/benefit trade-offs, technical roadmaps, solution reviews.</p></div>
+            </div>
+          </div>
+          <div class="card flip" tabindex="0">
+            <div class="card-inner">
+              <div class="card-front"><div class="big-icon">❤️</div><h4>Emotional</h4><p>"How do we feel?"</p></div>
+              <div class="card-back"><p>Fear of legacy decommission risk, frustration with past failed programmes, anxiety about AI/automation impact.</p></div>
+            </div>
+          </div>
+          <div class="card flip" tabindex="0">
+            <div class="card-inner">
+              <div class="card-front"><div class="big-icon">👥</div><h4>Social</h4><p>"Who are we?"</p></div>
+              <div class="card-back"><p>Turf/ownership between CIO/CTO/CISO, departmental identity, who "owns" platform strategy.</p></div>
+            </div>
+          </div>
+        </div>
+        <p class="tip"><span class="icon">⚠️</span> Tap/click each card to flip. Most stakeholder conflict in review boards is a <b>social</b> conversation disguised as a <b>practical</b> one.</p>
+        </main></div><div class="slide-wrap" data-index="3"><main class="slide">
+        <h2><span class="icon">🎚️</span> The Matching Principle for Governance Boards</h2>
+        <p>When a senior stakeholder pushes back in a design authority meeting, the instinct is to defend the architecture with more facts. This fails if the stakeholder is actually in an emotional or social conversation.</p>
+        <ul class="checklist">
+          <li><span class="icon">👀</span> Notice signals: is the pushback about facts, or about risk/fear/reputation?</li>
+          <li><span class="icon">❓</span> Ask directly: "Are you looking for options here, or do you need me to understand a concern first?"</li>
+          <li><span class="icon">🤝</span> Match before you pivot — validate the concern/identity before presenting the technical case.</li>
+        </ul>
+        <div class="highlight"><span class="icon">🏦</span> EA application: before presenting a target-state architecture to a sceptical CFO, ask what outcome they actually need — cost certainty (practical), confidence in delivery (emotional), or protection of their team's remit (social).</div>
+        </main></div><div class="slide-wrap" data-index="4"><main class="slide">
+        <h2><span class="icon">📋</span> Four Rules for Stakeholder Conversations</h2>
+        <ol class="numbered">
+          <li><span class="num-icon">1️⃣</span> Diagnose the conversation type before you respond to pushback in a steering committee.</li>
+          <li><span class="num-icon">2️⃣</span> State your architectural goals plainly, and explicitly ask stakeholders for theirs — don't assume alignment.</li>
+          <li><span class="num-icon">3️⃣</span> Acknowledge the emotional undercurrent (change fatigue, risk aversion, past failed transformations) before presenting the roadmap.</li>
+          <li><span class="num-icon">4️⃣</span> Recognise when identity/ownership is at stake and address it directly.</li>
+        </ol>
+        </main></div><div class="slide-wrap" data-index="5"><main class="slide">
+        <h2><span class="icon">🔁</span> Deep Questions &amp; Looping — for Difficult Stakeholders</h2>
+        <p>With difficult or defensive senior stakeholders, surface-level Q&amp;A rarely resolves resistance. Deep questions surface the real concern.</p>
+        <table>
+          <tr><th>Instead of</th><th>Ask</th></tr>
+          <tr><td>"Do you approve this design?"</td><td>"What would need to be true for you to feel confident in this direction?"</td></tr>
+          <tr><td>"Why are you against the cloud migration?"</td><td>"What's your biggest concern if this doesn't go well?"</td></tr>
+        </table>
+        <div class="loop-diagram">
+          <div class="loop-step"><span class="icon">❓</span>Ask</div>
+          <div class="arrow">→</div>
+          <div class="loop-step"><span class="icon">🔄</span>Repeat back</div>
+          <div class="arrow">→</div>
+          <div class="loop-step"><span class="icon">✅</span>Confirm</div>
+        </div>
+        <p class="tip">Being seen to listen builds authority faster than being seen to be right in exec steering groups.</p>
+        </main></div><div class="slide-wrap" data-index="6"><main class="slide">
+        <h2><span class="icon">⚡</span> Handling Conflict in Architecture Reviews</h2>
+        <ul class="checklist">
+          <li><span class="icon">🕵️</span> Identify whether resistance is really about identity/ownership rather than technical merits.</li>
+          <li><span class="icon">🙏</span> Validate the stakeholder's position or team's contribution before presenting a counter-argument.</li>
+          <li><span class="icon">💬</span> Replace "here's why that's wrong" with "how do you see it?" — de-escalates status-driven pushback.</li>
+        </ul>
+        <div class="highlight"><span class="icon">🖥️</span> Example: a Head of Infrastructure resists a target-state cloud architecture. The real conversation may be social (fear of losing control), not practical (technical merits).</div>
+        </main></div><div class="slide-wrap" data-index="7"><main class="slide">
+        <h2><span class="icon">🌊</span> Applying "Neural Entrainment" in Exec Presentations</h2>
+        <p>Strong communicators create synchrony in tone, pacing and energy with their audience — a felt sense of being "on the same page."</p>
+        <p>For EAs presenting to boards, this means matching the room's energy and formality level, not just delivering a polished deck. A calm, measured pace during a high-anxiety change discussion builds trust faster than more slides or more data.</p>
+        <div class="highlight"><span class="icon">🎙️</span> Match tone and pacing before you match content.</div>
+        </main></div><div class="slide-wrap" data-index="8"><main class="slide">
+        <h2><span class="icon">✉️</span> Written &amp; Digital Communication for EAs</h2>
+        <p>Applies directly to architecture decision records, RFC comments, Teams/Slack threads, and governance minutes.</p>
+        <ul class="checklist">
+          <li><span class="icon">🙂</span> Overemphasise politeness in written design feedback and RFC reviews.</li>
+          <li><span class="icon">🚫</span> Underemphasise sarcasm — tone is easily misread in async threads with senior leaders.</li>
+          <li><span class="icon">🙏</span> Use gratitude, clear framing, and hedges rather than absolute statements.</li>
+          <li><span class="icon">🔒</span> Take disagreements with senior stakeholders private before raising them in a governance forum.</li>
+        </ul>
+        </main></div><div class="slide-wrap" data-index="9"><main class="slide">
+        <h2><span class="icon">🏁</span> Key Takeaway for Enterprise Architects</h2>
+        <p>Technical credibility gets you in the room. Communication skill — diagnosing conversation type, matching it, asking deep questions, and looping for understanding — is what gets your architecture <i>adopted</i> by senior and difficult stakeholders.</p>
+        <div class="highlight"><span class="icon">✅</span> Practical next step: before your next design authority board or steering committee, identify in advance which stakeholders are likely to be in practical, emotional, or social mode — and plan your opening accordingly.</div>
+        </main></div>
+</div>
+
+<nav class="controls">
+  <button class="nav-btn" id="prevBtn">&larr; Prev</button>
+  <div class="dots" id="dots"><button data-goto="0" title="Cover" class="active"></button><button data-goto="1" title="Why This Matters for EAs"></button><button data-goto="2" title="The Three Conversation Types"></button><button data-goto="3" title="The Matching Principle"></button><button data-goto="4" title="Four Rules for Stakeholder Conversations"></button><button data-goto="5" title="Deep Questions & Looping"></button><button data-goto="6" title="Handling Conflict in Reviews"></button><button data-goto="7" title="Neural Entrainment in Exec Presentations"></button><button data-goto="8" title="Written & Digital Communication"></button><button data-goto="9" title="Key Takeaway"></button></div>
+  <span class="slide-counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="nextBtn">Next &rarr;</button>
+</nav>
+
+<script>
+(function() {
+  var total = 10;
+  var current = 0;
+  var wraps = document.querySelectorAll('.slide-wrap');
+  var dots = document.querySelectorAll('.dots button');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var counter = document.getElementById('counter');
+  var progressFill = document.getElementById('progressFill');
+
+  function render() {
+    wraps.forEach(function(w, i) { w.classList.toggle('active', i === current); });
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    counter.textContent = (current + 1) + ' / ' + total;
+    var pct = total > 1 ? (current / (total - 1)) * 100 : 0;
+    progressFill.style.width = pct + '%';
+  }
+
+  function goTo(i) {
+    if (i < 0 || i >= total) return;
+    current = i;
+    render();
+  }
+
+  prevBtn.addEventListener('click', function() { goTo(current - 1); });
+  nextBtn.addEventListener('click', function() { goTo(current + 1); });
+  dots.forEach(function(d) {
+    d.addEventListener('click', function() { goTo(parseInt(d.getAttribute('data-goto'), 10)); });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+  });
+
+  document.querySelectorAll('.card.flip').forEach(function(card) {
+    card.addEventListener('click', function() { card.classList.toggle('flipped'); });
+    card.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('flipped'); }
+    });
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
