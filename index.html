@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EA Academy</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=boska@500,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      --color-bg: #f7f6f2;
+      --color-surface: #fbfbf9;
+      --color-border: #d4d1ca;
+      --color-text: #28251d;
+      --color-text-muted: #6f6d67;
+      --color-primary: #01696f;
+      --color-accent: #d19900;
+      --shadow-md: 0 10px 30px rgba(40, 37, 29, 0.10);
+      --radius-lg: 1rem;
+      --radius-xl: 1.25rem;
+      --font-body: 'Satoshi', 'Inter', sans-serif;
+      --font-display: 'Boska', Georgia, serif;
+      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font-body);
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at top right, rgba(1, 105, 111, 0.08), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(209, 153, 0, 0.10), transparent 26%),
+        var(--color-bg);
+      line-height: 1.6;
+    }
+
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: clamp(2rem, 5vw, 4rem) 1.25rem;
+    }
+
+    .hero {
+      background: rgba(251, 251, 249, 0.82);
+      border: 1px solid rgba(40, 37, 29, 0.10);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      padding: clamp(2rem, 4vw, 3.5rem);
+      backdrop-filter: blur(8px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(1, 105, 111, 0.10);
+      color: var(--color-primary);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    h1 {
+      margin: var(--space-6) 0 var(--space-3);
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: var(--text-base);
+      max-width: 42rem;
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-12) 0 0;
+      display: grid;
+      gap: var(--space-6);
+    }
+
+    .item a {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: var(--space-4);
+      text-decoration: none;
+      color: inherit;
+      background: var(--color-surface);
+      border: 1px solid rgba(40, 37, 29, 0.10);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1.2rem;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
+    }
+
+    .item a:hover,
+    .item a:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(40, 37, 29, 0.12);
+      border-color: rgba(1, 105, 111, 0.28);
+      background: #ffffff;
+      outline: none;
+    }
+
+    .icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.9rem;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .icon.communicators {
+      background: rgba(1, 105, 111, 0.12);
+      color: var(--color-primary);
+    }
+
+    .icon.projects {
+      background: rgba(209, 153, 0, 0.16);
+      color: #8a5b00;
+    }
+
+    .text-block { min-width: 0; }
+
+    .title {
+      display: block;
+      font-size: var(--text-lg);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .meta {
+      display: block;
+      margin-top: 0.25rem;
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      word-break: break-word;
+    }
+
+    .arrow {
+      color: var(--color-text-muted);
+      transition: transform var(--transition), color var(--transition);
+    }
+
+    .item a:hover .arrow,
+    .item a:focus-visible .arrow {
+      transform: translateX(4px);
+      color: var(--color-primary);
+    }
+
+    .footer-note {
+      margin-top: var(--space-8);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+    }
+
+    @media (max-width: 640px) {
+      .item a { grid-template-columns: auto 1fr; }
+      .arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <span class="eyebrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3L14.8 8.2L20.5 9L16.4 13L17.4 18.7L12 16L6.6 18.7L7.6 13L3.5 9L9.2 8.2L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        EA Learning Index
+      </span>
+
+      <h1 id="page-title">EA Academy</h1>
+      <p class="subtitle">A simple launch page for your presentations, with quick access to the two teaching decks.</p>
+
+      <ul class="list">
+        <li class="item">
+          <a href="SuperCommunicators_EA_Presentation.html">
+            <span class="icon communicators" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6.5C4 5.12 5.12 4 6.5 4H14.5C15.88 4 17 5.12 17 6.5V11.5C17 12.88 15.88 14 14.5 14H10L6 17V14.5C4.85 14.27 4 13.26 4 12.05V6.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M18 8H18.5C19.88 8 21 9.12 21 10.5V15.5C21 16.88 19.88 18 18.5 18H18V20L14.8 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="text-block">
+              <span class="title">Super Communicators</span>
+              <span class="meta">Opens: SuperCommunicators_EA_Presentation.html</span>
+            </span>
+            <span class="arrow" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+        </li>
+
+        <li class="item">
+          <a href="how_big_things_get_done_teaching.slides.html">
+            <span class="icon projects" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 7.5L12 3L20 7.5L12 12L4 7.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M4 12L12 16.5L20 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 16.5L12 21L20 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="text-block">
+              <span class="title">How Big Projects Fail</span>
+              <span class="meta">Opens: how_big_things_get_done_teaching.slides.html</span>
+            </span>
+            <span class="arrow" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+        </li>
+      </ul>
+
+      <p class="footer-note">Built as a clean index page with inline SVG icons for a polished presentation hub.</p>
+    </section>
+  </main>
+</body>
+</html>
